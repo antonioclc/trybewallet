@@ -23,11 +23,13 @@ class ExpenseTable extends React.Component {
         <tbody>
           {
             expenses.map((expense) => {
-              const { id, description, tag, method, value, currency } = expense;
+              const { id, description, tag, method, value } = expense;
               const findCurrency = Object.entries(expense.exchangeRates).find(
                 (currencyActual) => expense.currency === currencyActual[0],
               );
               const currencyName = findCurrency[1].name.replace('/Real Brasileiro', '');
+              const cambio = Number(findCurrency[1].ask).toFixed(2);
+              const convertedValue = Number(findCurrency[1].ask * value).toFixed(2);
               return (
                 <tr key={ id } className="table">
                   <td className="table-input">{description}</td>
@@ -35,8 +37,8 @@ class ExpenseTable extends React.Component {
                   <td className="table-input">{method}</td>
                   <td className="table-input">{value}</td>
                   <td className="table-input">{currencyName}</td>
-                  <td className="table-input">{Number(findCurrency[1].ask).toFixed(2)}</td>
-                  <td className="table-input">{Number(findCurrency[1].ask * value).toFixed(2)}</td>
+                  <td className="table-input">{cambio}</td>
+                  <td className="table-input">{convertedValue}</td>
                   <td className="table-input">Real</td>
                   <td className="table-input">Editar/Excluir</td>
                 </tr>
