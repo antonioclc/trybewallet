@@ -36,7 +36,11 @@ class Expense extends React.Component {
   getCurrencys() {
     fetch('https://economia.awesomeapi.com.br/json/all')
       .then((response) => response.json())
-      .then((quotes) => this.setState({ currencys: Object.keys(quotes) }));
+      .then((quotes) => {
+        const currencys = Object.keys(quotes);
+        currencys.splice(1, 1);
+        this.setState({ currencys });
+      });
   }
 
   clickButtonAdd() {
@@ -63,18 +67,22 @@ class Expense extends React.Component {
           name="description"
           onChange={ this.onInputChange }
         />
-        <select
-          data-testid="currency-input"
-          name="currency"
-          onChange={ this.onInputChange }
-        >
-          {
-            currencys.length === 0 ? null : (
-              currencys.map((curren) => (
-                <option key={ curren } value={ curren }>{curren}</option>))
-            )
-          }
-        </select>
+        <label htmlFor="currency">
+          moeda
+          <select
+            data-testid="currency-input"
+            name="currency"
+            id="currency"
+            onChange={ this.onInputChange }
+          >
+            {
+              currencys.length === 0 ? null : (
+                currencys.map((curren) => (
+                  <option key={ curren } data-testid={ curren }>{curren}</option>))
+              )
+            }
+          </select>
+        </label>
         <select data-testid="method-input" name="method" onChange={ this.onInputChange }>
           <option value="Dinheiro">Dinheiro</option>
           <option value="Cartão de crédito">Cartão de crédito</option>
