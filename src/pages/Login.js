@@ -60,8 +60,6 @@ class Login extends React.Component {
               name="email"
               data-testid="email-input"
               onChange={ this.onInputChange }
-              required
-              titel="asdas"
             />
           </label>
         </div>
