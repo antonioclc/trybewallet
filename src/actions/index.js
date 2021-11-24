@@ -4,11 +4,13 @@ export const GET_EMAIL = 'GET_EMAIL';
 
 export const GET_EXPENSE = 'GET_EXPENSE';
 
-export const RECEIVE_QUOTES = 'RECEIVE_QUOTES';
+export const DELETE_EXPENSE = 'DELETE_EXPENSE';
 
 export const getEmail = (payload) => ({ type: GET_EMAIL, payload });
 
 export const getExpense = (payload) => ({ type: GET_EXPENSE, payload });
+
+export const deleteExpense = (payload) => ({ type: DELETE_EXPENSE, payload });
 
 export function getDataExpense(data) {
   return (dispatch) => {
