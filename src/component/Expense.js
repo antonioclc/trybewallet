@@ -1,27 +1,39 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { getDataExpense } from '../actions';
+import { deleteExpense, getEditedExpense } from '../actions';
 
 class Expense extends React.Component {
   constructor() {
     super();
 
     this.state = {
+      id: '',
       value: '',
       description: '',
-      currency: 'USD',
-      method: 'Dinheiro',
-      tag: 'Alimentação',
+      currency: '',
+      method: '',
+      tag: '',
+      exchangeRates: {},
+      valueEdited: '',
+      descriptionEdited: '',
+      currencyEdited: '',
+      methodEdited: '',
+      tagEdited: '',
+      edit: false,
       currencys: [],
     };
 
+    this.getStateFromRedux = this.getStateFromRedux.bind(this);
+    this.ShowEditExpense = this.ShowEditExpense.bind(this);
     this.onInputChange = this.onInputChange.bind(this);
-    this.clickButtonAdd = this.clickButtonAdd.bind(this);
     this.getCurrencys = this.getCurrencys.bind(this);
+    this.switchEditState = this.switchEditState.bind(this);
+    this.clickButtonEdit = this.clickButtonEdit.bind(this);
   }
 
   componentDidMount() {
+    this.getStateFromRedux();
     this.getCurrencys();
   }
 
@@ -43,35 +55,35 @@ class Expense extends React.Component {
       });
   }
 
-  clickButtonAdd() {
-    const { expenses, sendExpense } = this.props;
-    const { value, description, currency, method, tag } = this.state;
-    const expense = { id: expenses.length, value, description, currency, method, tag };
-    sendExpense(expense);
-    document.getElementById('expense-form').reset();
+  getStateFromRedux() {
+    const { expenseData:
+       { id, value, description, currency, method, tag, exchangeRates } } = this.props;
+    this.setState({
+      id, value, description, currency, method, tag, exchangeRates,
+    });
   }
 
-  render() {
+  ShowEditExpense() {
     const { currencys } = this.state;
     return (
-      <form id="expense-form">
+      <div>
         <input
           data-testid="value-input"
           type="number"
-          name="value"
+          name="valueEdited"
           onChange={ this.onInputChange }
         />
         <input
           data-testid="description-input"
           type="text"
-          name="description"
+          name="descriptionEdited"
           onChange={ this.onInputChange }
         />
         <label htmlFor="currency">
           moeda
           <select
             data-testid="currency-input"
-            name="currency"
+            name="currencyEdited"
             id="currency"
             onChange={ this.onInputChange }
           >
@@ -83,33 +95,98 @@ class Expense extends React.Component {
             }
           </select>
         </label>
-        <select data-testid="method-input" name="method" onChange={ this.onInputChange }>
+        <select data-testid="method-input" name="methodEdited" onChange={ this.onInputChange }>
           <option value="Dinheiro">Dinheiro</option>
           <option value="Cartão de crédito">Cartão de crédito</option>
           <option value="Cartão de débito">Cartão de débito</option>
         </select>
-        <select data-testid="tag-input" name="tag" onChange={ this.onInputChange }>
+        <select data-testid="tag-input" name="tagEdited" onChange={ this.onInputChange }>
           <option value="Alimentação">Alimentação</option>
           <option value="Lazer">Lazer</option>
           <option value="Trabalho">Trabalho</option>
           <option value="Transporte">Transporte</option>
           <option value="Saúde">Saúde</option>
         </select>
-        <button type="button" onClick={ this.clickButtonAdd }>Adicionar despesa</button>
-      </form>
+        <button type="button" onClick={ this.clickButtonEdit }>Editar despesa</button>
+      </div>
+    );
+  }
+
+  switchEditState() {
+    this.setState({ edit: true });
+  }
+
+  clickButtonEdit() {
+    const { id, valueEdited, descriptionEdited, currencyEdited,
+      methodEdited, tagEdited, exchangeRates } = this.state;
+    const { getExpenseToEdit } = this.props;
+
+    getExpenseToEdit({
+      id,
+      value: valueEdited,
+      description: descriptionEdited,
+      currency: currencyEdited,
+      method: methodEdited,
+      tag: tagEdited,
+      exchangeRates,
+    });
+    this.setState({ edit: false });
+  }
+
+  render() {
+    const { getExpenseToDeleted, expenseData:
+       { id, description, tag, method, value, exchangeRates, currency } } = this.props;
+    const findCurrency = Object.entries(exchangeRates).find(
+      (currencyActual) => currency === currencyActual[0],
+    );
+    const currencyName = findCurrency[1].name.replace('/Real Brasileiro', '');
+    const cambio = Number(findCurrency[1].ask).toFixed(2);
+    const convertedValue = Number(findCurrency[1].ask * value).toFixed(2);
+    const { edit } = this.state;
+    return (
+      <>
+        <tr key={ id } className="table">
+          <td className="table-input">{description}</td>
+          <td className="table-input">{tag}</td>
+          <td className="table-input">{method}</td>
+          <td className="table-input">{value}</td>
+          <td className="table-input">{currencyName}</td>
+          <td className="table-input">{cambio}</td>
+          <td className="table-input">{convertedValue}</td>
+          <td className="table-input">Real</td>
+          <td>
+            <button
+              type="button"
+              data-testid="edit-btn"
+              onClick={ this.switchEditState }
+            >
+              Editar
+
+            </button>
+            <button
+              type="button"
+              data-testid="delete-btn"
+              onClick={ () => getExpenseToDeleted(id) }
+            >
+              Deletar
+
+            </button>
+          </td>
+        </tr>
+        {
+          edit ? this.ShowEditExpense() : null
+        }
+      </>
     );
   }
 }
 
 const mapDispatchToProps = (dispatch) => ({
-  sendExpense: (state) => dispatch(getDataExpense(state)),
+  getExpenseToDeleted: (state) => dispatch(deleteExpense(state)),
+  getExpenseToEdit: (state) => dispatch(getEditedExpense(state)),
 });
-
-const mapStateToProps = (state) => ({
-  expenses: state.wallet.expenses,
-  currencies: state.wallet.currencies });
 
 Expense.propTypes = PropTypes.shape({
 }).isRequired;
 
-export default connect(mapStateToProps, mapDispatchToProps)(Expense);
+export default connect(null, mapDispatchToProps)(Expense);

@@ -1,6 +1,6 @@
 // Esse reducer será responsável por tratar o todas as informações relacionadas as despesas
 
-import { GET_EXPENSE, DELETE_EXPENSE } from '../actions';
+import { GET_EXPENSE, DELETE_EXPENSE, GET_EDITED_EXPENSE } from '../actions';
 
 const initialState = {
   currencies: [],
@@ -18,6 +18,11 @@ function userExpense(state = initialState, action) {
     return {
       ...state,
       expenses: state.expenses.filter((expense) => expense.id !== action.payload) };
+  case GET_EDITED_EXPENSE:
+    return {
+      ...state,
+      expenses: action.payload,
+    };
   default:
     return state;
   }
