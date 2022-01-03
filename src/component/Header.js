@@ -18,7 +18,7 @@ class Header extends React.Component {
           <p data-testid="email-field">{ email }</p>
           <div>
             <p>Despesa Total:</p>
-            <p data-testid="total-field">
+            <p data-testid="total-field" className="header-total-field">
               {
                 askConvertedToBRL.reduce((acc, cur) => acc + cur, 0)
               }
@@ -26,7 +26,6 @@ class Header extends React.Component {
           </div>
           <p data-testid="header-currency-field">BRL</p>
         </div>
-
       </header>
     );
   }

@@ -6,15 +6,19 @@ export const GET_EXPENSE = 'GET_EXPENSE';
 
 export const DELETE_EXPENSE = 'DELETE_EXPENSE';
 
-export const GET_EDITED_EXPENSE = 'GET_EDITED_EXPENSE';
+export const EDIT_EXPENSE = 'EDIT_EXPENSE';
+
+export const NEW_EXPENSE = 'NEW_EXPENSE';
 
 export const getEmail = (payload) => ({ type: GET_EMAIL, payload });
 
 export const getExpense = (payload) => ({ type: GET_EXPENSE, payload });
 
-export const getEditedExpense = (payload) => ({ type: GET_EDITED_EXPENSE, payload });
-
 export const deleteExpense = (payload) => ({ type: DELETE_EXPENSE, payload });
+
+export const editExpense = (payload) => ({ type: EDIT_EXPENSE, payload });
+
+export const newExpense = (payload) => ({ type: NEW_EXPENSE, payload });
 
 export function getDataExpense(data) {
   return (dispatch) => {
